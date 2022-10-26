@@ -1,6 +1,6 @@
 # PySearch
 ## Description
-A simple search engine web crawler implemented using Python
+A simple search engine web crawler implemented using Python. The application can be manually built and installed or ran using docker.
 
 ## Prereqisites
 * [Python](https://www.python.org/downloads/)
@@ -22,3 +22,7 @@ A simple search engine web crawler implemented using Python
 3. Install requirements: `pip install -r requirements.txt`
 
 _Note_: To decativate virtual environment: `deactivate`
+
+## Docker Installation
+1. Build docker image: `docker build -t pysearch .`
+2. Run docker image: `docker run pysearch`
