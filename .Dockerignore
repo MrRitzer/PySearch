@@ -1,0 +1,10 @@
+# Ignore env directory
+env
+env/*
+
+# Ignore git files
+.gitignore
+.git
+
+# Ignore readme
+*.md
