@@ -34,35 +34,38 @@ class SearchEngine:
     def getLinks(self) -> list:
         return self.links
 
-    async def crawl(self) -> None:
-        async with httpx.AsyncClient(headers=self.headers) as session:
-            while True:
-                url = self.links[self.loc]
-                if self.crawled.__contains__(url):
-                    print("Next url")
-                    self.loc += 1
-                else:
-                    break
-            baseUrl = urlparse(url).netloc
-            f = await session.get(url)
-            # f = requests.get(url,headers=self.headers)
-            soup = BeautifulSoup(f.content,'lxml')
-            tags = soup.find_all('a')
-            local = []
-            remote = []
-            for link in tags:
-                try:
-                    temp = str(link['href'])
-                    if temp[0] != "#":
-                        if temp[0:2] == "//":
-                            remote.append("https:"+temp)
-                        elif temp[0] == "/":
-                            local.append("https://" + baseUrl + temp)
-                        elif temp.find("http") != -1 or temp.find("https") != -1 :
-                            remote.append(temp)
-                except:
-                    continue
-            self.crawled.append(url)
-            self.links += list(set(local+remote))
-            if len(self.links) < self.size:
-                await self.crawl()
+    def getCrawled(self) -> list:
+        return self.crawled
+
+    def crawl(self) -> None:
+        # with httpx.AsyncClient(headers=self.headers) as session:
+        while True:
+            url = self.links[self.loc]
+            if self.crawled.__contains__(url):
+                print("Next url")
+                self.loc += 1
+            else:
+                break
+        baseUrl = urlparse(url).netloc
+        # f = session.get(url)
+        f = requests.get(url,headers=self.headers)
+        soup = BeautifulSoup(f.content,'lxml')
+        tags = soup.find_all('a')
+        local = []
+        remote = []
+        for link in tags:
+            try:
+                temp = str(link['href'])
+                if temp[0] != "#":
+                    if temp[0:2] == "//":
+                        remote.append("https:"+temp)
+                    elif temp[0] == "/":
+                        local.append("https://" + baseUrl + temp)
+                    elif temp.find("http") != -1 or temp.find("https") != -1 :
+                        remote.append(temp)
+            except:
+                continue
+        self.crawled.append(url)
+        self.links += list(set(local+remote))
+        if len(self.links) < self.size:
+            self.crawl()
