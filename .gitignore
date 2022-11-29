@@ -1,3 +1,6 @@
 # Python venv
 env
 env/*
+
+# Pycache
+__pycache__/
