@@ -1,27 +1,31 @@
 import requests
-import lxml
-import httpx
-import asyncio
+from optimizer import Optimizer
+from node import Node
 from validators import url as urlValidator
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
-# url = "https://www.rottentomatoes.com/top/bestofrt/"
-6 
 class SearchEngine:
     def __init__(self) -> None:
-        self.links = []
-        self.size = 1000
+        self.opt = Optimizer()
+        self.size = 100
+        self.url = ""
         self.keywords = []
         self.crawled = []
-        self.loc = 0
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE'}
         
     def setUrl(self,url) -> None:
-        self.links.append(url)
+        self.url = url
+        self.opt.setUrl(url)
+        self.opt.links.update({str(url):10})
+
+    def setKeywords(self,keywords) -> None:
+        for keyword in keywords:
+            self.keywords.append(keyword['key'])
+        self.opt.keywords = self.keywords
 
     def containsUrl(self) -> bool:
-        if len(self.links) > 0:
+        if len(self.opt.links) > 0:
             return True
         return False
 
@@ -32,40 +36,51 @@ class SearchEngine:
         return urlValidator(url)
 
     def getLinks(self) -> list:
-        return self.links
+        return list(self.opt.links)
 
     def getCrawled(self) -> list:
         return self.crawled
+    
+    def getRanked(self) -> list:
+        return self.opt.getRanked()
+
+    def getScored(self) -> list:
+        return self.opt.getScored()
+
+    def getKeywords(self) -> list:
+        return self.keywords
 
     def crawl(self) -> None:
-        # with httpx.AsyncClient(headers=self.headers) as session:
-        while True:
-            url = self.links[self.loc]
-            if self.crawled.__contains__(url):
-                print("Next url")
-                self.loc += 1
-            else:
-                break
+        if len(list(self.opt.links.keys())) == 1:
+            url = list(self.opt.links.keys())[0]
+        else:
+            urls = list(self.opt.links.keys())
+            loc = 0
+            while True:
+                url = urls[loc]
+                if self.crawled.__contains__(url):
+                    loc += 1
+                else:
+                    break
         baseUrl = urlparse(url).netloc
-        # f = session.get(url)
         f = requests.get(url,headers=self.headers)
         soup = BeautifulSoup(f.content,'lxml')
         tags = soup.find_all('a')
-        local = []
-        remote = []
         for link in tags:
             try:
+                newUrl = self.url
                 temp = str(link['href'])
                 if temp[0] != "#":
                     if temp[0:2] == "//":
-                        remote.append("https:"+temp)
+                        newUrl = str("https:"+temp)
                     elif temp[0] == "/":
-                        local.append("https://" + baseUrl + temp)
+                        newUrl = str("https://" + baseUrl + temp)
                     elif temp.find("http") != -1 or temp.find("https") != -1 :
-                        remote.append(temp)
+                        newUrl = str(temp)
+                    self.opt.links.update({newUrl:0})
             except:
                 continue
         self.crawled.append(url)
-        self.links += list(set(local+remote))
-        if len(self.links) < self.size:
+        self.opt.run()
+        if len(self.opt.links) < self.size:
             self.crawl()

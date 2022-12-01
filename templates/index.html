@@ -14,6 +14,10 @@
     <div class="h-100 d-flex align-items-center justify-content-center">
         <div>
             {% block search %} {% endblock %}
+            <form action="/api/getcrawled" method="get" class="search-bar">
+                <input type="text" placeholder="search anything" name="q">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
         </div>
     </div>
 
