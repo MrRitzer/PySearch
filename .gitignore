@@ -47,5 +47,9 @@ Thumbs.db
 env
 env/*
 
+# vscode 
+*/.vscode/
+*/.vscode/*
+
 # Pycache
 __pycache__/
