@@ -42,14 +42,3 @@ testem.log
 .DS_Store
 Thumbs.db
 
-
-# Python venv
-env
-env/*
-
-# vscode 
-*/.vscode/
-*/.vscode/*
-
-# Pycache
-__pycache__/
