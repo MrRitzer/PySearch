@@ -1,7 +1,5 @@
 from optimizer import Optimizer
 from validators import url as urlValidator
-from urllib.parse import urlparse
-from bs4 import BeautifulSoup
 from data import Data
 
 class SearchEngine:
@@ -9,26 +7,24 @@ class SearchEngine:
         self.opt = Optimizer()
 
     def clearSearch(self) -> None:
-        Data.keywords = []
-        Data.crawled = []
-        Data.scored = []
-        Data.url = None
+        self.opt = Optimizer()
+        Data.reset()
 
     def newSearch(self,url) -> None:
         Data.url = url
         self.opt.newNode(url)
 
     def continueSearch(self) -> None:
-        self.opt.crawl()
+        self.opt.start()
 
     def increaseSize(self,size) -> None:
         Data.size += size
 
+    def getSize(self) -> int:
+        return Data.size
+
     def setKeywords(self,keywords) -> None:
-        temp = []
-        for keyword in keywords:
-            temp.append(keyword['key'])
-        Data.keywords = temp
+        Data.keywords = keywords
 
     def canContinue(self) -> bool:
         return Data.url != None
@@ -37,7 +33,7 @@ class SearchEngine:
         return urlValidator(url)
 
     def getLinks(self) -> list:
-        return self.opt.ranked.getLinks()
+        return Data.links
 
     def getRanked(self) -> list:
         return self.opt.ranked.getRanked()

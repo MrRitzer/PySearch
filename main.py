@@ -1,6 +1,6 @@
 # main.py
 from urllib.parse import urlparse
-from flask import Flask, redirect, request, url_for, Response, render_template
+from flask import Flask, request, Response, render_template
 from threading import Thread
 from search import SearchEngine
 
@@ -10,6 +10,7 @@ se = SearchEngine()
 
 @app.route("/api/startcrawl",methods = ['post'])
 def startCrawl():
+    se.clearSearch()
     try:
         keywords = request.json['keywords']
         se.setKeywords(keywords)
@@ -18,7 +19,6 @@ def startCrawl():
     try:
         url = request.json['url']
         if se.isValid(url):
-            se.clearSearch()
             se.newSearch(url)
             return Response("Valid url", status=200, mimetype='application/json')
         else:
@@ -29,7 +29,7 @@ def startCrawl():
 @app.route("/api/crawl")
 def crawl():
     if se.canContinue():
-        se.increaseSize(100)
+        se.increaseSize(10)
         se.continueSearch()
         return Response("Valid url", status=200, mimetype='application/json')
     return Response("Missing url", status=400, mimetype='application/json')
@@ -50,6 +50,9 @@ def getScored():
 def getFormal():
     return se.getFormal()
 
+@app.route("/api/getsize")
+def getSize():
+    return {"size": se.getSize()}
 
 @app.route("/api/getcrawled")
 def getCrawled():
@@ -70,29 +73,22 @@ def index():
     if request.method == "GET":
         return render_template('index.html',links=se.getRanked())
     if request.method == "POST":
-        if se.url != None:
+        se.clearSearch()
+        try:
+            keywords = request.form.get('keywords')
+            splt = keywords.split(" ")
+            se.setKeywords(splt)
+        except:
             pass
-        else:
-            try:
-                temp = request.form.get('keywords')
-                keywords = temp.split(" ")
-                se.setKeywords(keywords)
-            except:
-                pass
+        try:
             url = request.form.get('url')
             if se.isValid(url):
-                se.setUrl(url)
-                se.increaseSize(100)
-                thread = Thread(target=se.crawl, args=())
-                thread.daemon = True
-                thread.start()
-                return render_template('index.html',links=se.getRanked())
-            elif se.containsUrl():
-                se.increaseSize(100)
-                Thread(target=se.crawl, args=()).start()
+                se.newSearch(url)
                 return render_template('index.html',links=se.getRanked())
             else:
                 return render_template('index.html',warn='Invalid/Missing url')
+        except:
+            return render_template('index.html',warn='Invalid/Missing url')
 
 # Only use this for debugging
 if __name__ == "__main__":

@@ -3,51 +3,50 @@ from urllib.parse import urlparse
 from node import Node
 from ranked import Ranked
 from data import Data
+import time
 
 class Optimizer:
     def __init__(self) -> None:
         self.ranked = Ranked()
-        self.__thread = Thread(target=self.run,args=())
+        self.__event = Event()
+        self.__thread = Thread(target=self.__loop,args=())
         self.__thread.daemon = True
         self.__thread.start()
-        self.sem = Semaphore(0)
 
-    def run(self) -> None:
+    def __loop(self) -> None:
         while True:
-            self.sem.acquire()
+            self.__event.wait()
             for n in self.ranked.ranked:
-                if self.ranked.getSize() < Data.size:
-                    if Data.scored.__contains__(n):
-                        continue
-                    else:
-                        self.scoreNode(n)
+                # if self.ranked.getSize() < Data.size:
+                if len(Data.crawled) < Data.size:
+                    if not Data.crawled.__contains__(n.getUrl()):
+                        n.crawl()
+                        Data.crawled.append(n.getUrl())
+                        self.scoreLinks()
                 else:
                     break
-            self.sem.release()
+            self.__event.clear()
 
     def start(self) -> None:
-        self.__sem.release()
+        self.__event.set()
 
     def newNode(self,url) -> None:
-        node = Node(url)
-        node.setScore(2)
-        node.crawl()
+        node = Node(url,2)
+        Data.scored.append(url)
+        Data.links.append(url)
         self.ranked.addNode(node)
+        self.start()
 
-    def scoreNode(self,node:Node):
-        node.sem.acquire()
-        print("Aquired!")
-        nodes = node.getLinks()
-        for n1 in nodes:
-            for n2 in Data.scored:
-                if n1.getUrl() == n2.getUrl():
-                    n1.setScore(n2.getScore())
-                    break
-            score = self.calculateScore(n1.getUrl())
-            n1.setScore(score)
-            self.ranked.addNode(n1)
-            Data.scored.append(n1)
-        node.sem.release()
+    def scoreLinks(self):
+        time.sleep(0.5)
+        Data.sem.acquire()
+        new = list((set(Data.scored) | set(Data.links)) - (set(Data.scored) & set(Data.links)))
+        for url in new:
+            score = self.calculateScore(url)
+            node = Node(url,score)
+            self.ranked.addNode(node)
+            Data.scored.append(url)
+        Data.sem.release()
 
     def calculateScore(self,url="") -> int:
         if len(Data.keywords) and Data.url == None:
