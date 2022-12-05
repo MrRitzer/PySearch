@@ -1,6 +1,7 @@
 from optimizer import Optimizer
 from validators import url as urlValidator
 from data import Data
+import json
 
 class SearchEngine:
     def __init__(self) -> None:
@@ -24,7 +25,10 @@ class SearchEngine:
         return Data.size
 
     def setKeywords(self,keywords) -> None:
-        Data.keywords = keywords
+        temp = []
+        for key in keywords:
+            temp.append(key['key'])
+        Data.keywords = temp
 
     def canContinue(self) -> bool:
         return Data.url != None
@@ -42,6 +46,7 @@ class SearchEngine:
         return self.opt.ranked.getScored()
 
     def getFormal(self) -> list:
+        Data.pollSize = len(self.opt.ranked.getRanked())
         return self.opt.ranked.getFormal()
 
     def getCrawled(self) -> list:
@@ -49,3 +54,9 @@ class SearchEngine:
 
     def getKeywords(self) -> list:
         return Data.keywords
+
+    def poll(self) -> dict: 
+        if Data.pollSize < len(self.opt.ranked.getRanked()):
+            return {"data":"Can poll"}, 200
+        return {"data":"Can't poll"}, 200
+        

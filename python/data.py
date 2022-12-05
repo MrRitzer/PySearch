@@ -8,13 +8,15 @@ class Data:
     crawled = []
     scored = []
     sem = Semaphore()
+    pollSize = 0
     size = 10
 
     def reset() -> None:
-        url = None
-        links = []
-        keywords = []
-        crawled = []
-        scored = []
-        sem = Semaphore()
-        size = 10
+        Data.url = None
+        Data.links = []
+        Data.keywords = []
+        Data.crawled = []
+        Data.scored = []
+        Data.sem = Semaphore()
+        Data.pollSize = 0
+        Data.size = 10

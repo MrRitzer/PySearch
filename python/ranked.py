@@ -47,5 +47,5 @@ class Ranked:
     def getFormal(self) -> list:
         temp = []
         for n in self.ranked:
-            temp.append({n.getTitle():n.getUrl()})
+            temp.append({"title":n.getTitle(),"url":n.getUrl()})
         return temp
