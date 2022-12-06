@@ -1,0 +1,19 @@
+table {
+    width: 500px;
+    height: 30%;
+}
+
+th {
+    height: 0px;
+}
+
+.mat-cell,
+.mat-header-cell {
+    border: none !important;
+}
+
+th.mat-header-cell,
+td.mat-cell,
+td.mat-footer-cell {
+    border-bottom-width: 0px;
+}

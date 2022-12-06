@@ -1,0 +1,42 @@
+<div class="h-100 d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <input placeholder="Starting url" type="text" [(ngModel)]="url">
+                        </div>
+                        <div class="col">
+                            <input placeholder="Keywords" type="text" [(ngModel)]="keywords">
+                        </div>
+                        <div class="col">
+                            <button [disabled]="canSearch()" (click)="search()" type="submit " class="btn btn-primary ">Search</button>
+                        </div>
+                        <div class="col">
+                            <button [disabled]="canContinue()" (click)="continueSearch()" type="submit " class="btn btn-primary ">Continue Search</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                                <ng-container matColumnDef="title">
+                                    <th style="display: none" mat-header-cell *matHeaderCellDef> Title </th>
+                                    <td mat-cell *matCellDef="let link">
+                                        <a target="_blank" *ngIf="link.title != null" href="{{link.url}}">{{link.title}}</a>
+                                        <a target="_blank" *ngIf="link.title == null" href="{{link.url}}">{{link.url}}</a>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="columns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+                            </table>
+                            <mat-paginator #paginator [pageSizeOptions]="[5, 10]" showFirstLastButtons (page)="next()"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+</div>
