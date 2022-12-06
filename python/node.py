@@ -33,13 +33,13 @@ class Node:
         self.__thread.start()
 
     def __run(self) -> None:
-        Data.sem.acquire()
         url = self.__url
         baseUrl = urlparse(url).netloc
         f = requests.get(url,headers=Data.headers)
         soup = BeautifulSoup(f.content,'lxml')
         self.__title = soup.find('title').string
         tags = soup.find_all('a')
+        Data.sem.acquire()
         for link in tags:
             try:
                 newUrl = None

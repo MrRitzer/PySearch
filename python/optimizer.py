@@ -17,7 +17,6 @@ class Optimizer:
         while True:
             self.__event.wait()
             for n in self.ranked.ranked:
-                # if self.ranked.getSize() < Data.size:
                 if len(Data.crawled) < Data.size:
                     if not Data.crawled.__contains__(n.getUrl()):
                         n.crawl()
