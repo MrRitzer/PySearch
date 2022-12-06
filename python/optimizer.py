@@ -55,7 +55,7 @@ class Optimizer:
         score = 0
         try:
             if urlparse(url).netloc == urlparse(Data.url).netloc:
-                score += 2
+                score += 1
         except:
             pass
         try:
