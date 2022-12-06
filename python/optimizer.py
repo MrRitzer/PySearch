@@ -46,6 +46,7 @@ class Optimizer:
             node = Node(url,score)
             self.ranked.addNode(node)
             Data.scored.append(url)
+        Data.hasUpdated = True
         Data.sem.release()
 
     def calculateScore(self,url="") -> int:

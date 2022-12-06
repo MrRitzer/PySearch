@@ -8,7 +8,7 @@ class Data:
     crawled = []
     scored = []
     sem = Semaphore()
-    pollSize = 0
+    hasUpdated = False
     size = 10
 
     def reset() -> None:
@@ -18,5 +18,5 @@ class Data:
         Data.crawled = []
         Data.scored = []
         Data.sem = Semaphore()
-        Data.pollSize = 0
+        Data.hasUpdated = False
         Data.size = 10

@@ -1,4 +1,5 @@
 from node import Node
+from data import Data
 
 class Ranked: 
     def __init__(self) -> None:

@@ -46,7 +46,7 @@ class SearchEngine:
         return self.opt.ranked.getScored()
 
     def getFormal(self) -> list:
-        Data.pollSize = len(self.opt.ranked.getRanked())
+        Data.hasUpdated = False
         return self.opt.ranked.getFormal()
 
     def getCrawled(self) -> list:
@@ -56,7 +56,7 @@ class SearchEngine:
         return Data.keywords
 
     def poll(self) -> dict: 
-        if Data.pollSize < len(self.opt.ranked.getRanked()):
+        if Data.hasUpdated:
             return {"data":"Can poll"}, 200
         return {"data":"Can't poll"}, 200
         
