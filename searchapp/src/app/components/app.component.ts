@@ -32,8 +32,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     }
     this.searchService.scored.subscribe(observer)
-    this.url = "http://www.rottentomatoes.com";
-    this.keywords = "black panther";
+    // this.url = "http://www.rottentomatoes.com";
+    // this.keywords = "black panther";
+    this.url = "";
+    this.keywords = "";
   }
 
   ngOnInit() { }

@@ -30,7 +30,7 @@ class Optimizer:
         self.__event.set()
 
     def newNode(self,url) -> None:
-        node = Node(url,2)
+        node = Node(url,1)
         Data.scored.append(url)
         Data.links.append(url)
         self.ranked.addNode(node)
